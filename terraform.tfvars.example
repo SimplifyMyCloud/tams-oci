@@ -1,0 +1,17 @@
+tenancy_ocid       = "ocid1.tenancy.oc1..xxxxxxxxxxxxxxxxxxxxxx"
+user_ocid          = "ocid1.user.oc1..xxxxxxxxxxxxxxxxxxxxxx"
+fingerprint        = "xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx"
+private_key_path   = "~/.oci/oci_api_key.pem"
+region             = "us-phoenix-1"
+compartment_ocid   = "ocid1.compartment.oc1..xxxxxxxxxxxxxxxxxxxxxx"
+
+project_name       = "tams"
+environment        = "production"
+
+ssh_public_key     = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC..."
+db_admin_password  = "ChangeMe!SecurePassword123#"
+
+instance_shape          = "VM.Standard.E4.Flex"
+instance_ocpus          = 2
+instance_memory_in_gbs  = 16
+api_instance_count      = 2
