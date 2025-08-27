@@ -87,3 +87,9 @@ variable "api_instance_count" {
   type        = number
   default     = 2
 }
+
+variable "web_domain" {
+  description = "Domain name for the web UI (optional)"
+  type        = string
+  default     = ""
+}

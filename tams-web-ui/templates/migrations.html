@@ -1,0 +1,104 @@
+{{define "migrations"}}
+<div class="fade-in">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-900">
+            <i class="fas fa-cloud-upload-alt mr-2"></i>Migration Jobs
+        </h1>
+        <a href="/migrations/new" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+            <i class="fas fa-plus mr-2"></i>New Migration
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {{range .}}
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900">Job {{.ID}}</h3>
+                        <p class="text-sm text-gray-500">Asset ID: {{.AssetID}}</p>
+                    </div>
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        {{if eq .Status "completed"}}bg-green-100 text-green-800
+                        {{else if eq .Status "running"}}bg-yellow-100 text-yellow-800
+                        {{else if eq .Status "failed"}}bg-red-100 text-red-800
+                        {{else}}bg-gray-100 text-gray-800{{end}}">
+                        {{.Status}}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="px-6 py-4">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Source Type</p>
+                        <p class="text-sm text-gray-900">{{.SourceType}}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Source Path</p>
+                        <p class="text-sm text-gray-900 truncate">{{.SourcePath}}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Started</p>
+                        <p class="text-sm text-gray-900">{{.StartedAt.Format "Jan 02 15:04"}}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Completed</p>
+                        <p class="text-sm text-gray-900">
+                            {{if not .CompletedAt.IsZero}}
+                                {{.CompletedAt.Format "Jan 02 15:04"}}
+                            {{else}}
+                                -
+                            {{end}}
+                        </p>
+                    </div>
+                </div>
+
+                {{if eq .Status "running"}}
+                <div class="mb-4">
+                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                        <span>Progress</span>
+                        <span>{{printf "%.0f" .Progress}}%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-indigo-600 h-2 rounded-full progress-bar" style="width: {{.Progress}}%"></div>
+                    </div>
+                </div>
+                {{end}}
+
+                {{if .Error}}
+                <div class="bg-red-50 border-l-4 border-red-400 p-3">
+                    <p class="text-sm text-red-800">{{.Error}}</p>
+                </div>
+                {{end}}
+
+                <div class="mt-4 flex gap-2">
+                    {{if eq .Status "running"}}
+                    <button onclick="cancelJob('{{.ID}}')" class="text-sm bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">
+                        <i class="fas fa-stop mr-1"></i>Cancel
+                    </button>
+                    {{else if eq .Status "failed"}}
+                    <button onclick="retryJob('{{.ID}}')" class="text-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
+                        <i class="fas fa-redo mr-1"></i>Retry
+                    </button>
+                    {{end}}
+                    <button onclick="viewJobDetails('{{.ID}}')" class="text-sm bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700">
+                        <i class="fas fa-info-circle mr-1"></i>Details
+                    </button>
+                </div>
+            </div>
+        </div>
+        {{end}}
+    </div>
+
+    {{if not .}}
+    <div class="bg-white shadow rounded-lg p-8 text-center">
+        <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
+        <p class="text-gray-500">No migration jobs found</p>
+        <a href="/migrations/new" class="mt-4 inline-block bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+            Start Your First Migration
+        </a>
+    </div>
+    {{end}}
+</div>
+{{end}}

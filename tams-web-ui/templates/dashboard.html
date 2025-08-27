@@ -1,0 +1,140 @@
+{{define "dashboard"}}
+<div class="fade-in">
+    <h1 class="text-3xl font-bold text-gray-900 mb-8">
+        <i class="fas fa-chart-line mr-2"></i>Dashboard
+    </h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-video text-3xl text-indigo-600"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Total Assets</dt>
+                            <dd class="text-3xl font-semibold text-gray-900">{{.TotalAssets}}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-puzzle-piece text-3xl text-green-600"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Total Chunks</dt>
+                            <dd class="text-3xl font-semibold text-gray-900">{{.TotalChunks}}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-hdd text-3xl text-blue-600"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Storage Used</dt>
+                            <dd class="text-3xl font-semibold text-gray-900">{{printf "%.2f" .StorageUsedGB}} GB</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-spinner text-3xl text-yellow-600"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Active Jobs</dt>
+                            <dd class="text-3xl font-semibold text-gray-900">{{.ActiveJobs}}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-check-circle text-3xl text-green-600"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Completed Jobs</dt>
+                            <dd class="text-3xl font-semibold text-gray-900">{{.CompletedJobs}}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-circle text-3xl text-red-600"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Failed Jobs</dt>
+                            <dd class="text-3xl font-semibold text-gray-900">{{.FailedJobs}}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">
+                <i class="fas fa-clock mr-2"></i>Recent Assets
+            </h3>
+        </div>
+        <div class="bg-white">
+            <ul class="divide-y divide-gray-200">
+                {{range .RecentAssets}}
+                <li>
+                    <a href="/asset/{{.ID}}" class="block hover:bg-gray-50 px-4 py-4">
+                        <div class="flex items-center">
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-indigo-600 truncate">{{.Title}}</p>
+                                <p class="text-sm text-gray-500">{{.Description}}</p>
+                                <div class="mt-2 flex items-center text-sm text-gray-500">
+                                    <span class="mr-4"><i class="fas fa-film mr-1"></i>{{.Format}}</span>
+                                    <span class="mr-4"><i class="fas fa-clock mr-1"></i>{{.Duration}} min</span>
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                        {{if eq .Status "active"}}bg-green-100 text-green-800{{else if eq .Status "processing"}}bg-yellow-100 text-yellow-800{{else}}bg-gray-100 text-gray-800{{end}}">
+                                        {{.Status}}
+                                    </span>
+                                </div>
+                            </div>
+                            <div>
+                                <i class="fas fa-chevron-right text-gray-400"></i>
+                            </div>
+                        </div>
+                    </a>
+                </li>
+                {{end}}
+            </ul>
+        </div>
+    </div>
+</div>
+{{end}}

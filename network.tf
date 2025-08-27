@@ -152,8 +152,9 @@ resource "oci_core_security_list" "tams_public_security_list" {
   display_name   = "${var.project_name}-public-sl"
 
   ingress_security_rules {
-    protocol = "6"
-    source   = "0.0.0.0/0"
+    protocol    = "6"
+    source      = "0.0.0.0/0"
+    description = "HTTPS traffic for Web UI"
 
     tcp_options {
       min = 443
@@ -162,8 +163,9 @@ resource "oci_core_security_list" "tams_public_security_list" {
   }
 
   ingress_security_rules {
-    protocol = "6"
-    source   = "0.0.0.0/0"
+    protocol    = "6"
+    source      = "0.0.0.0/0"
+    description = "HTTP traffic (redirect to HTTPS)"
 
     tcp_options {
       min = 80
@@ -172,8 +174,9 @@ resource "oci_core_security_list" "tams_public_security_list" {
   }
 
   ingress_security_rules {
-    protocol = "6"
-    source   = "0.0.0.0/0"
+    protocol    = "6"
+    source      = "0.0.0.0/0"
+    description = "SSH for administration (consider restricting source IP)"
 
     tcp_options {
       min = 22
@@ -184,6 +187,7 @@ resource "oci_core_security_list" "tams_public_security_list" {
   egress_security_rules {
     protocol    = "all"
     destination = "0.0.0.0/0"
+    description = "Allow all outbound traffic"
   }
 
   freeform_tags = {
@@ -198,8 +202,9 @@ resource "oci_core_security_list" "tams_private_security_list" {
   display_name   = "${var.project_name}-private-sl"
 
   ingress_security_rules {
-    protocol = "6"
-    source   = "10.0.0.0/16"
+    protocol    = "6"
+    source      = "10.0.1.0/24"
+    description = "TAMS API access ONLY from public subnet (load balancer)"
 
     tcp_options {
       min = 8080
@@ -208,8 +213,9 @@ resource "oci_core_security_list" "tams_private_security_list" {
   }
 
   ingress_security_rules {
-    protocol = "6"
-    source   = "10.0.1.0/24"
+    protocol    = "6"
+    source      = "10.0.1.0/24"
+    description = "SSH from bastion/public subnet only"
 
     tcp_options {
       min = 22
@@ -217,9 +223,16 @@ resource "oci_core_security_list" "tams_private_security_list" {
     }
   }
 
+  ingress_security_rules {
+    protocol    = "1"
+    source      = "10.0.0.0/16"
+    description = "ICMP for internal health checks"
+  }
+
   egress_security_rules {
     protocol    = "all"
     destination = "0.0.0.0/0"
+    description = "Allow all outbound traffic"
   }
 
   freeform_tags = {

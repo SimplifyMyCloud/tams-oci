@@ -3,6 +3,16 @@ output "load_balancer_ip" {
   value       = oci_load_balancer.tams_load_balancer.ip_address_details[0].ip_address
 }
 
+output "web_ui_url" {
+  description = "URL to access the TAMS Web UI"
+  value       = "https://${oci_load_balancer.tams_load_balancer.ip_address_details[0].ip_address}"
+}
+
+output "web_ui_private_ip" {
+  description = "Private IP of the Web UI instance"
+  value       = oci_core_instance.tams_webui.private_ip
+}
+
 output "database_private_ip" {
   description = "Private IP of the database instance"
   value       = oci_core_instance.tams_database.private_ip

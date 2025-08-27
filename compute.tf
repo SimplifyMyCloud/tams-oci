@@ -15,8 +15,10 @@ resource "oci_core_instance_configuration" "tams_api_config" {
       }
 
       create_vnic_details {
-        subnet_id      = oci_core_subnet.tams_private_subnet.id
-        hostname_label = "tamsapi"
+        subnet_id        = oci_core_subnet.tams_private_subnet.id
+        hostname_label   = "tamsapi"
+        assign_public_ip = false
+        nsg_ids          = [oci_core_network_security_group.tams_api_nsg.id]
       }
 
       source_details {
