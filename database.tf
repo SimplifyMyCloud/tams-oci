@@ -23,12 +23,12 @@ resource "oci_core_instance" "tams_database" {
   }
 
   metadata = {
-    ssh_authorized_keys = var.ssh_public_key
+    ssh_authorized_keys = file(var.ssh_public_key_path)
     user_data = base64encode(templatefile("${path.module}/scripts/init_postgresql.sh", {
-      db_password        = var.db_admin_password
-      db_version         = var.db_version
-      backup_bucket_name = oci_objectstorage_bucket.tams_archive_bucket.name
-      namespace          = data.oci_objectstorage_namespace.ns.namespace
+      DB_PASSWORD   = var.db_admin_password
+      DB_VERSION    = var.db_version
+      BACKUP_BUCKET = oci_objectstorage_bucket.tams_archive_bucket.name
+      NAMESPACE     = data.oci_objectstorage_namespace.ns.namespace
     }))
   }
 

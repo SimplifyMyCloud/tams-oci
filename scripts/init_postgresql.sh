@@ -1,10 +1,10 @@
 #!/bin/bash
 set -e
 
-DB_PASSWORD="${db_password}"
-DB_VERSION="${db_version}"
-BACKUP_BUCKET="${backup_bucket_name}"
-NAMESPACE="${namespace}"
+DB_PASSWORD="${DB_PASSWORD}"
+DB_VERSION="${DB_VERSION}"
+BACKUP_BUCKET="${BACKUP_BUCKET}"
+NAMESPACE="${NAMESPACE}"
 
 sudo apt-get update
 sudo apt-get install -y postgresql-${DB_VERSION} postgresql-client-${DB_VERSION} postgresql-contrib-${DB_VERSION}

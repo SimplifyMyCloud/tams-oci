@@ -1,4 +1,4 @@
-resource "oci_objectstorage_namespace" "tams_namespace" {
+data "oci_objectstorage_namespace" "ns" {
   compartment_id = var.compartment_ocid
 }
 
@@ -8,7 +8,7 @@ resource "oci_objectstorage_bucket" "tams_media_bucket" {
   name           = "${var.project_name}-media-${var.environment}"
   access_type    = "NoPublicAccess"
   storage_tier   = "Standard"
-  versioning     = "Enabled"
+  versioning     = "Suspended"
 
   object_events_enabled = true
 
@@ -32,10 +32,10 @@ resource "oci_objectstorage_bucket" "tams_archive_bucket" {
   namespace      = data.oci_objectstorage_namespace.ns.namespace
   name           = "${var.project_name}-archive-${var.environment}"
   access_type    = "NoPublicAccess"
-  storage_tier   = "Archive"
+  storage_tier   = "Standard"
+  versioning     = "Suspended"
 
   object_events_enabled = true
-  auto_tiering          = "InfrequentAccess"
 
   retention_rules {
     display_name = "tams-archive-retention"
@@ -58,29 +58,14 @@ resource "oci_objectstorage_bucket" "tams_temp_bucket" {
   name           = "${var.project_name}-temp-${var.environment}"
   access_type    = "NoPublicAccess"
   storage_tier   = "Standard"
+  versioning     = "Suspended"
 
-  lifecycle_rules {
-    name        = "delete-temp-objects"
-    enabled     = true
-    time_amount = 7
-    time_unit   = "DAYS"
-    action      = "DELETE"
-    is_locked   = false
-
-    object_name_filter {
-      inclusion_prefixes = ["temp/"]
-    }
-  }
 
   freeform_tags = {
     Environment = var.environment
     Project     = var.project_name
     Purpose     = "TAMS temporary processing storage"
   }
-}
-
-data "oci_objectstorage_namespace" "ns" {
-  compartment_id = var.compartment_ocid
 }
 
 resource "oci_identity_policy" "tams_storage_policy" {

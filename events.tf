@@ -18,7 +18,7 @@ resource "oci_events_rule" "video_upload_rule" {
     actions {
       action_type = "FAAS"
       is_enabled  = true
-      
+
       function_id = oci_functions_function.video_processor.id
     }
   }
@@ -43,10 +43,11 @@ resource "oci_ons_notification_topic" "tams_processing_topic" {
 
 # Email subscription for processing notifications (optional)
 resource "oci_ons_subscription" "admin_email_subscription" {
-  count      = var.admin_email != "" ? 1 : 0
-  topic_id   = oci_ons_notification_topic.tams_processing_topic.id
-  endpoint   = var.admin_email
-  protocol   = "EMAIL"
+  count          = var.admin_email != "" ? 1 : 0
+  compartment_id = var.compartment_ocid
+  topic_id       = oci_ons_notification_topic.tams_processing_topic.id
+  endpoint       = var.admin_email
+  protocol       = "EMAIL"
 
   freeform_tags = {
     Environment = var.environment
@@ -77,7 +78,7 @@ resource "oci_events_rule" "chunk_completion_rule" {
     actions {
       action_type = "FAAS"
       is_enabled  = true
-      
+
       function_id = oci_functions_function.video_analyzer.id
       description = "Trigger video analysis for chunks"
     }
@@ -85,8 +86,8 @@ resource "oci_events_rule" "chunk_completion_rule" {
     actions {
       action_type = "ONS"
       is_enabled  = true
-      
-      topic_id = oci_ons_notification_topic.tams_processing_topic.id
+
+      topic_id    = oci_ons_notification_topic.tams_processing_topic.id
       description = "Notify when chunks are created"
     }
   }
@@ -99,16 +100,16 @@ resource "oci_events_rule" "chunk_completion_rule" {
 
 # Function for handling chunk completion notifications
 resource "oci_functions_function" "chunk_notifier" {
-  application_id = oci_functions_application.tams_functions_app.id
-  display_name   = "chunk-notifier"
-  image          = "${var.region}.ocir.io/${data.oci_objectstorage_namespace.ns.namespace}/${var.project_name}/chunk-notifier:latest"
-  memory_in_mbs  = 256
+  application_id     = oci_functions_application.tams_functions_app.id
+  display_name       = "chunk-notifier"
+  image              = "${var.region}.ocir.io/${data.oci_objectstorage_namespace.ns.namespace}/${var.project_name}/chunk-notifier:latest"
+  memory_in_mbs      = 256
   timeout_in_seconds = 30
 
   config = {
-    DB_HOST     = oci_core_instance.tams_database.private_ip
-    DB_PASSWORD = var.db_admin_password
-    DB_NAME     = "tamsdb"
+    DB_HOST      = oci_core_instance.tams_database.private_ip
+    DB_PASSWORD  = var.db_admin_password
+    DB_NAME      = "tamsdb"
     API_ENDPOINT = "http://${oci_load_balancer.tams_load_balancer.ip_address_details[0].ip_address}/api/v1"
   }
 
@@ -121,9 +122,9 @@ resource "oci_functions_function" "chunk_notifier" {
 
 # Dead Letter Queue for failed events
 resource "oci_streaming_stream" "failed_events_stream" {
-  name            = "${var.project_name}-failed-events"
-  compartment_id  = var.compartment_ocid
-  partitions      = 1
+  name               = "${var.project_name}-failed-events"
+  compartment_id     = var.compartment_ocid
+  partitions         = 1
   retention_in_hours = 24
 
   freeform_tags = {
@@ -140,7 +141,7 @@ resource "oci_sch_service_connector" "function_failures" {
 
   source {
     kind = "logging"
-    
+
     log_sources {
       compartment_id = var.compartment_ocid
       log_group_id   = oci_logging_log_group.functions_log_group.id
@@ -195,47 +196,4 @@ resource "oci_logging_log" "function_errors_log" {
   }
 }
 
-# Monitoring and Alarms
-resource "oci_monitoring_alarm" "function_failures" {
-  compartment_id        = var.compartment_ocid
-  display_name          = "${var.project_name}-function-failures"
-  description           = "Alert when function failures exceed threshold"
-  is_enabled            = true
-  metric_compartment_id = var.compartment_ocid
-  namespace             = "oci_faas"
-
-  query                 = "FunctionErrors[1m].sum() > 0"
-  severity              = "ERROR"
-  pending_duration      = "PT5M"
-  resolution            = "1m"
-  evaluation_frequency  = "PT1M"
-
-  destinations = [oci_ons_notification_topic.tams_processing_topic.id]
-
-  freeform_tags = {
-    Environment = var.environment
-    Project     = var.project_name
-  }
-}
-
-resource "oci_monitoring_alarm" "long_processing_time" {
-  compartment_id        = var.compartment_ocid
-  display_name          = "${var.project_name}-long-processing"
-  description           = "Alert when video processing takes too long"
-  is_enabled            = true
-  metric_compartment_id = var.compartment_ocid
-  namespace             = "oci_faas"
-
-  query                 = "FunctionDuration[1m].max() > 240000"  # 4 minutes in milliseconds
-  severity              = "WARNING"
-  pending_duration      = "PT5M"
-  resolution            = "1m"
-  evaluation_frequency  = "PT1M"
-
-  destinations = [oci_ons_notification_topic.tams_processing_topic.id]
-
-  freeform_tags = {
-    Environment = var.environment
-    Project     = var.project_name
-  }
-}
+# Monitoring and Alarms - Removed for POC

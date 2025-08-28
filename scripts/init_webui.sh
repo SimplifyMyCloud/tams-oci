@@ -1,9 +1,9 @@
 #!/bin/bash
 set -e
 
-API_URL="${api_url}"
-INTERNAL_API_URL="${internal_api_url}"
-WEB_DOMAIN="${web_domain}"
+API_URL="${API_URL}"
+INTERNAL_API_URL="${INTERNAL_API_URL}"
+WEB_DOMAIN="${WEB_DOMAIN}"
 
 sudo apt-get update
 sudo apt-get install -y nginx certbot python3-certbot-nginx golang-go git make

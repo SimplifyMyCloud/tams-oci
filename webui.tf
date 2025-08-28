@@ -23,11 +23,11 @@ resource "oci_core_instance" "tams_webui" {
   }
 
   metadata = {
-    ssh_authorized_keys = var.ssh_public_key
+    ssh_authorized_keys = file(var.ssh_public_key_path)
     user_data = base64encode(templatefile("${path.module}/scripts/init_webui.sh", {
-      api_url            = "http://${oci_load_balancer.tams_load_balancer.ip_address_details[0].ip_address}"
-      internal_api_url   = "http://10.0.2.10:8080"
-      web_domain         = var.web_domain
+      API_URL          = "http://${oci_load_balancer.tams_load_balancer.ip_address_details[0].ip_address}"
+      INTERNAL_API_URL = "http://10.0.2.10:8080"
+      WEB_DOMAIN       = var.web_domain
     }))
   }
 
@@ -45,13 +45,13 @@ resource "oci_load_balancer_backend_set" "tams_webui_backend_set" {
   policy           = "ROUND_ROBIN"
 
   health_checker {
-    protocol            = "HTTP"
-    port                = 8090
-    url_path            = "/health"
-    return_code         = 200
-    interval_ms         = 10000
-    timeout_in_millis   = 3000
-    retries             = 3
+    protocol          = "HTTP"
+    port              = 8090
+    url_path          = "/health"
+    return_code       = 200
+    interval_ms       = 10000
+    timeout_in_millis = 3000
+    retries           = 3
   }
 
   session_persistence_configuration {
@@ -67,12 +67,13 @@ resource "oci_load_balancer_backend" "tams_webui_backend" {
   port             = 8090
 }
 
-resource "oci_load_balancer_listener" "tams_webui_listener" {
+resource "oci_load_balancer_listener" "tams_main_listener" {
   load_balancer_id         = oci_load_balancer.tams_load_balancer.id
-  name                     = "${var.project_name}-webui-listener"
+  name                     = "${var.project_name}-main-listener"
   default_backend_set_name = oci_load_balancer_backend_set.tams_webui_backend_set.name
   port                     = 443
   protocol                 = "HTTP"
+  path_route_set_name      = oci_load_balancer_path_route_set.tams_routes.name
 
   connection_configuration {
     idle_timeout_in_seconds = 60
@@ -89,18 +90,18 @@ resource "oci_load_balancer_path_route_set" "tams_routes" {
   name             = "${var.project_name}-routes"
 
   path_routes {
-    path          = "/api/*"
+    path             = "/api/*"
     backend_set_name = oci_load_balancer_backend_set.tams_api_backend_set.name
-    
+
     path_match_type {
       match_type = "PREFIX_MATCH"
     }
   }
 
   path_routes {
-    path          = "/"
+    path             = "/"
     backend_set_name = oci_load_balancer_backend_set.tams_webui_backend_set.name
-    
+
     path_match_type {
       match_type = "PREFIX_MATCH"
     }
@@ -109,7 +110,7 @@ resource "oci_load_balancer_path_route_set" "tams_routes" {
 
 resource "oci_load_balancer_rule_set" "security_headers" {
   load_balancer_id = oci_load_balancer.tams_load_balancer.id
-  name             = "${var.project_name}-security-headers"
+  name             = "${var.project_name}_security_headers"
 
   items {
     action = "ADD_HTTP_RESPONSE_HEADER"

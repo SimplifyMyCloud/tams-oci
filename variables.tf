@@ -47,9 +47,10 @@ variable "availability_domain_number" {
   default     = 1
 }
 
-variable "ssh_public_key" {
-  description = "SSH public key for instance access"
+variable "ssh_public_key_path" {
+  description = "Path to SSH public key file for instance access"
   type        = string
+  default     = "./ssh-key.pub"
 }
 
 variable "db_admin_password" {

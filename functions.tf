@@ -4,14 +4,14 @@ resource "oci_functions_application" "tams_functions_app" {
   subnet_ids     = [oci_core_subnet.tams_private_subnet.id]
 
   config = {
-    OCI_NAMESPACE          = data.oci_objectstorage_namespace.ns.namespace
-    OCI_REGION            = var.region
-    MEDIA_BUCKET          = oci_objectstorage_bucket.tams_media_bucket.name
-    ARCHIVE_BUCKET        = oci_objectstorage_bucket.tams_archive_bucket.name
-    TEMP_BUCKET           = oci_objectstorage_bucket.tams_temp_bucket.name
-    TARGET_DURATION       = "60"
-    SCENE_THRESHOLD       = "0.3"
-    MAX_DEVIATION         = "0.2"
+    OCI_NAMESPACE   = data.oci_objectstorage_namespace.ns.namespace
+    OCI_REGION      = var.region
+    MEDIA_BUCKET    = oci_objectstorage_bucket.tams_media_bucket.name
+    ARCHIVE_BUCKET  = oci_objectstorage_bucket.tams_archive_bucket.name
+    TEMP_BUCKET     = oci_objectstorage_bucket.tams_temp_bucket.name
+    TARGET_DURATION = "60"
+    SCENE_THRESHOLD = "0.3"
+    MAX_DEVIATION   = "0.2"
   }
 
   freeform_tags = {
@@ -21,10 +21,10 @@ resource "oci_functions_application" "tams_functions_app" {
 }
 
 resource "oci_functions_function" "video_chunker" {
-  application_id = oci_functions_application.tams_functions_app.id
-  display_name   = "video-chunker"
-  image          = "${var.region}.ocir.io/${data.oci_objectstorage_namespace.ns.namespace}/${var.project_name}/video-chunker:latest"
-  memory_in_mbs  = 2048
+  application_id     = oci_functions_application.tams_functions_app.id
+  display_name       = "video-chunker"
+  image              = "${var.region}.ocir.io/${data.oci_objectstorage_namespace.ns.namespace}/${var.project_name}/video-chunker:latest"
+  memory_in_mbs      = 2048
   timeout_in_seconds = 300
 
   config = {
@@ -41,18 +41,18 @@ resource "oci_functions_function" "video_chunker" {
 }
 
 resource "oci_functions_function" "video_processor" {
-  application_id = oci_functions_application.tams_functions_app.id
-  display_name   = "video-processor"
-  image          = "${var.region}.ocir.io/${data.oci_objectstorage_namespace.ns.namespace}/${var.project_name}/video-processor:latest"
-  memory_in_mbs  = 512
+  application_id     = oci_functions_application.tams_functions_app.id
+  display_name       = "video-processor"
+  image              = "${var.region}.ocir.io/${data.oci_objectstorage_namespace.ns.namespace}/${var.project_name}/video-processor:latest"
+  memory_in_mbs      = 512
   timeout_in_seconds = 60
 
   config = {
-    OCI_NAMESPACE     = data.oci_objectstorage_namespace.ns.namespace
-    OCI_REGION        = var.region
-    MEDIA_BUCKET      = oci_objectstorage_bucket.tams_media_bucket.name
-    TEMP_BUCKET       = oci_objectstorage_bucket.tams_temp_bucket.name
-    CHUNKER_ENDPOINT  = "https://${oci_apigateway_gateway.tams_api_gateway.hostname}/tams/chunk-video"
+    OCI_NAMESPACE    = data.oci_objectstorage_namespace.ns.namespace
+    OCI_REGION       = var.region
+    MEDIA_BUCKET     = oci_objectstorage_bucket.tams_media_bucket.name
+    TEMP_BUCKET      = oci_objectstorage_bucket.tams_temp_bucket.name
+    CHUNKER_ENDPOINT = "https://${oci_apigateway_gateway.tams_api_gateway.hostname}/tams/chunk-video"
   }
 
   freeform_tags = {
@@ -63,10 +63,10 @@ resource "oci_functions_function" "video_processor" {
 }
 
 resource "oci_functions_function" "video_analyzer" {
-  application_id = oci_functions_application.tams_functions_app.id
-  display_name   = "video-analyzer"
-  image          = "${var.region}.ocir.io/${data.oci_objectstorage_namespace.ns.namespace}/${var.project_name}/video-analyzer:latest"
-  memory_in_mbs  = 1024
+  application_id     = oci_functions_application.tams_functions_app.id
+  display_name       = "video-analyzer"
+  image              = "${var.region}.ocir.io/${data.oci_objectstorage_namespace.ns.namespace}/${var.project_name}/video-analyzer:latest"
+  memory_in_mbs      = 1024
   timeout_in_seconds = 120
 
   config = {
@@ -104,7 +104,7 @@ resource "oci_identity_dynamic_group" "functions_dynamic_group" {
   compartment_id = var.tenancy_ocid
   name           = "${var.project_name}-functions-dg"
   description    = "Dynamic group for TAMS Functions"
-  
+
   matching_rule = "ALL {resource.type='fnfunc', resource.compartment.id='${var.compartment_ocid}'}"
 
   freeform_tags = {
@@ -138,14 +138,14 @@ resource "oci_apigateway_deployment" "functions_deployment" {
       methods = ["POST"]
 
       backend {
-        type = "ORACLE_FUNCTIONS_BACKEND"
+        type        = "ORACLE_FUNCTIONS_BACKEND"
         function_id = oci_functions_function.video_chunker.id
       }
 
       request_policies {
         body_validation {
           content {
-            media_type = "application/json"
+            media_type      = "application/json"
             validation_type = "DISABLED"
           }
         }
@@ -155,7 +155,7 @@ resource "oci_apigateway_deployment" "functions_deployment" {
         header_transformations {
           set_headers {
             items {
-              name = "Access-Control-Allow-Origin"
+              name   = "Access-Control-Allow-Origin"
               values = ["*"]
             }
           }
@@ -182,10 +182,10 @@ resource "oci_apigateway_deployment" "functions_deployment" {
 
 # Container Registry for Functions
 resource "oci_artifacts_container_repository" "video_chunker_repo" {
-  compartment_id   = var.compartment_ocid
-  display_name     = "${var.project_name}/video-chunker"
-  is_immutable     = false
-  is_public        = false
+  compartment_id = var.compartment_ocid
+  display_name   = "${var.project_name}/video-chunker"
+  is_immutable   = false
+  is_public      = false
 
   freeform_tags = {
     Environment = var.environment

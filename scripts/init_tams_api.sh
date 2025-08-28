@@ -1,13 +1,13 @@
 #!/bin/bash
 set -e
 
-DB_HOST="${db_host}"
-DB_PASSWORD="${db_password}"
-MEDIA_BUCKET="${media_bucket}"
-ARCHIVE_BUCKET="${archive_bucket}"
-TEMP_BUCKET="${temp_bucket}"
-NAMESPACE="${namespace}"
-REGION="${region}"
+DB_HOST="${DB_HOST}"
+DB_PASSWORD="${DB_PASSWORD}"
+MEDIA_BUCKET="${MEDIA_BUCKET}"
+ARCHIVE_BUCKET="${ARCHIVE_BUCKET}"
+TEMP_BUCKET="${TEMP_BUCKET}"
+NAMESPACE="${NAMESPACE}"
+REGION="${REGION}"
 
 sudo apt-get update
 sudo apt-get install -y docker.io docker-compose nginx certbot python3-certbot-nginx

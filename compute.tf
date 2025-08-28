@@ -27,15 +27,15 @@ resource "oci_core_instance_configuration" "tams_api_config" {
       }
 
       metadata = {
-        ssh_authorized_keys = var.ssh_public_key
+        ssh_authorized_keys = file(var.ssh_public_key_path)
         user_data = base64encode(templatefile("${path.module}/scripts/init_tams_api.sh", {
-          db_host            = oci_core_instance.tams_database.private_ip
-          db_password        = var.db_admin_password
-          media_bucket       = oci_objectstorage_bucket.tams_media_bucket.name
-          archive_bucket     = oci_objectstorage_bucket.tams_archive_bucket.name
-          temp_bucket        = oci_objectstorage_bucket.tams_temp_bucket.name
-          namespace          = data.oci_objectstorage_namespace.ns.namespace
-          region             = var.region
+          DB_HOST        = oci_core_instance.tams_database.private_ip
+          DB_PASSWORD    = var.db_admin_password
+          MEDIA_BUCKET   = oci_objectstorage_bucket.tams_media_bucket.name
+          ARCHIVE_BUCKET = oci_objectstorage_bucket.tams_archive_bucket.name
+          TEMP_BUCKET    = oci_objectstorage_bucket.tams_temp_bucket.name
+          NAMESPACE      = data.oci_objectstorage_namespace.ns.namespace
+          REGION         = var.region
         }))
       }
     }
@@ -154,13 +154,13 @@ resource "oci_load_balancer_backend_set" "tams_api_backend_set" {
   policy           = "ROUND_ROBIN"
 
   health_checker {
-    protocol            = "HTTP"
-    port                = 8080
-    url_path            = "/health"
-    return_code         = 200
-    interval_ms         = 10000
-    timeout_in_millis   = 3000
-    retries             = 3
+    protocol          = "HTTP"
+    port              = 8080
+    url_path          = "/health"
+    return_code       = 200
+    interval_ms       = 10000
+    timeout_in_millis = 3000
+    retries           = 3
   }
 
   session_persistence_configuration {
@@ -169,22 +169,6 @@ resource "oci_load_balancer_backend_set" "tams_api_backend_set" {
   }
 }
 
-resource "oci_load_balancer_listener" "tams_api_listener" {
-  load_balancer_id         = oci_load_balancer.tams_load_balancer.id
-  name                     = "${var.project_name}-api-listener"
-  default_backend_set_name = oci_load_balancer_backend_set.tams_api_backend_set.name
-  port                     = 443
-  protocol                 = "HTTP"
-
-  connection_configuration {
-    idle_timeout_in_seconds = 60
-  }
-
-  ssl_configuration {
-    certificate_name        = oci_load_balancer_certificate.tams_certificate.certificate_name
-    verify_peer_certificate = false
-  }
-}
 
 resource "oci_load_balancer_certificate" "tams_certificate" {
   load_balancer_id   = oci_load_balancer.tams_load_balancer.id
