@@ -4,8 +4,8 @@ resource "oci_core_instance" "tams_database" {
   shape               = var.instance_shape
 
   shape_config {
-    ocpus         = 4
-    memory_in_gbs = 32
+    ocpus         = 1
+    memory_in_gbs = 8
   }
 
   display_name = "${var.project_name}-postgresql-db"

@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "WebSearch",
-      "Bash(terraform:*)"
+      "Bash(terraform:*)",
+      "Bash(nslookup:*)"
     ],
     "deny": [],
     "ask": []

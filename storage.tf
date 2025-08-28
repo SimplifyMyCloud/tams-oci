@@ -8,7 +8,6 @@ resource "oci_objectstorage_bucket" "tams_media_bucket" {
   name           = "${var.project_name}-media-${var.environment}"
   access_type    = "NoPublicAccess"
   storage_tier   = "Standard"
-  versioning     = "Suspended"
 
   object_events_enabled = true
 
@@ -33,7 +32,6 @@ resource "oci_objectstorage_bucket" "tams_archive_bucket" {
   name           = "${var.project_name}-archive-${var.environment}"
   access_type    = "NoPublicAccess"
   storage_tier   = "Standard"
-  versioning     = "Suspended"
 
   object_events_enabled = true
 
@@ -58,7 +56,6 @@ resource "oci_objectstorage_bucket" "tams_temp_bucket" {
   name           = "${var.project_name}-temp-${var.environment}"
   access_type    = "NoPublicAccess"
   storage_tier   = "Standard"
-  versioning     = "Suspended"
 
 
   freeform_tags = {

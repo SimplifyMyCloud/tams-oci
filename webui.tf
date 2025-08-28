@@ -1,12 +1,7 @@
 resource "oci_core_instance" "tams_webui" {
   availability_domain = local.availability_domain
   compartment_id      = var.compartment_ocid
-  shape               = var.instance_shape
-
-  shape_config {
-    ocpus         = 1
-    memory_in_gbs = 4
-  }
+  shape               = "VM.Standard.E2.1.Micro"
 
   display_name = "${var.project_name}-webui"
 
@@ -110,7 +105,7 @@ resource "oci_load_balancer_path_route_set" "tams_routes" {
 
 resource "oci_load_balancer_rule_set" "security_headers" {
   load_balancer_id = oci_load_balancer.tams_load_balancer.id
-  name             = "${var.project_name}_security_headers"
+  name             = "${replace(var.project_name, "-", "_")}_security_headers"
 
   items {
     action = "ADD_HTTP_RESPONSE_HEADER"
