@@ -1,0 +1,9 @@
+schema_version: 20180708
+name: video-analyzer
+version: 0.0.1
+runtime: docker
+memory: 1024
+timeout: 120
+config:
+  OCI_COMPARTMENT_ID: ""
+  TAMS_API_ENDPOINT: ""

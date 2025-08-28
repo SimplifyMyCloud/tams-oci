@@ -93,3 +93,9 @@ variable "web_domain" {
   type        = string
   default     = ""
 }
+
+variable "admin_email" {
+  description = "Admin email for processing notifications (optional)"
+  type        = string
+  default     = ""
+}
