@@ -1,0 +1,10 @@
+schema_version: 20180708
+name: video-chunker
+version: 0.0.1
+runtime: docker
+memory: 2048
+timeout: 300
+config:
+  TARGET_DURATION: 60
+  SCENE_THRESHOLD: 0.3
+  MAX_DEVIATION: 0.2

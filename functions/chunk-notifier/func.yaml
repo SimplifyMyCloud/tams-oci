@@ -1,0 +1,11 @@
+schema_version: 20180708
+name: chunk-notifier
+version: 0.0.1
+runtime: docker
+memory: 256
+timeout: 30
+config:
+  DB_HOST: ""
+  DB_PASSWORD: ""
+  DB_NAME: "tamsdb"
+  API_ENDPOINT: ""

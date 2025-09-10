@@ -1,0 +1,5 @@
+# This is an example SSH public key file
+# Replace this content with your actual SSH public key
+# The format should be: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC... user@hostname
+
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCexamplekeycontenthere user@hostname

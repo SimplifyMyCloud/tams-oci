@@ -1,0 +1,12 @@
+schema_version: 20180708
+name: video-processor
+version: 0.0.1
+runtime: docker
+memory: 512
+timeout: 60
+config:
+  OCI_NAMESPACE: ""
+  OCI_REGION: ""
+  MEDIA_BUCKET: ""
+  TEMP_BUCKET: ""
+  CHUNKER_ENDPOINT: ""

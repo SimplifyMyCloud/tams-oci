@@ -1,0 +1,17 @@
+tenancy_ocid       = "ocid1.tenancy.oc1..aaaaaaaahsmpdzwe32rhsyueon3tfkh2b7hsbbpfbxfe7heoggbayy533hla"
+user_ocid          = "ocid1.user.oc1..aaaaaaaa74mdjawrrtzou7j7xjxkgmg2vgelgpohi7mtcgc5qcohe6unblnq"
+fingerprint        = "8d:78:db:f7:26:1a:bf:8c:5b:0e:f9:16:7c:36:16:11"
+private_key_path   = "~/.oci/oci_api_key.pem"
+region             = "us-sanjose-1"
+compartment_ocid   = "ocid1.compartment.oc1..aaaaaaaamhnrteizt6vr25qvnq3vgdstf6rtcbomufmjc4jrgiv2idhvrnqa"
+
+project_name       = "tams-poc"
+environment        = "sandbox"
+
+ssh_public_key_path = "./tams-oci-key.pub"
+db_admin_password  = "Yomb1yl1qCtg5GPGEk"
+
+instance_shape          = "VM.Standard.E4.Flex"
+instance_ocpus          = 2
+instance_memory_in_gbs  = 16
+api_instance_count      = 2

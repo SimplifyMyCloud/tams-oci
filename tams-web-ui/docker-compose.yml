@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  tams-web-ui:
+    build: .
+    image: tams-web-ui:latest
+    container_name: tams-web-ui
+    ports:
+      - "8090:8090"
+    environment:
+      - PORT=8090
+      - TAMS_API_URL=${TAMS_API_URL:-http://localhost:8080}
+      - TAMS_API_KEY=${TAMS_API_KEY}
+    restart: unless-stopped
+    networks:
+      - tams-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8090/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+networks:
+  tams-network:
+    external: true
+    name: tams-network
